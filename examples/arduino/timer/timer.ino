@@ -1,6 +1,6 @@
 #include "StepPerTime.h"
 
-steppo::Stepper stepper( 2000, 10000, 200 );
+steppo::Stepper stepper( 200, 10000, 200 );
 
 void setup()
 {
@@ -19,7 +19,7 @@ void setup()
 
     stepper.start();
 
-    Serial.println( "Start!" )
+    Serial.println( "Start!" );
 }
 
 void loop()
@@ -30,7 +30,8 @@ ISR( TIMER1_COMPA_vect )
 {
     if( not stepper.isr() )
     {
-        Serial.println( "Done!" )
+        Serial.println( "Done!" );
+        TIMSK1 = 0;
         return;
     }
 
