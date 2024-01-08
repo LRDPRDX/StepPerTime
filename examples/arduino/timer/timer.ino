@@ -18,6 +18,8 @@ void setup()
     sei();
 
     stepper.start();
+
+    Serial.println( "Start!" )
 }
 
 void loop()
@@ -26,8 +28,11 @@ void loop()
 
 ISR( TIMER1_COMPA_vect )
 {
-    if( stepper.isr() )
+    if( not stepper.isr() )
+    {
+        Serial.println( "Done!" )
         return;
+    }
 
     if( stepper.newStep() )
     {
@@ -35,3 +40,4 @@ ISR( TIMER1_COMPA_vect )
         return;
     }
 }
+
