@@ -16,8 +16,9 @@ namespace steppo
 
             using State_t = bool (Stepper::*)(void);
 
-            bool isr();
+            bool onInterrupt();
             void start();
+            void stop();
 
             bool        newStep()      const { return m_newStep; };
             uint32_t    speedCurrent() const { return m_speedCurrent; };
@@ -25,7 +26,7 @@ namespace steppo
 
         private :
             // States
-            bool stop();
+            bool idle();
             bool accelerate();
             bool decelerate();
             bool run();
@@ -36,7 +37,7 @@ namespace steppo
             void reset();
 
             // Data
-            State_t     m_state { &Stepper::stop };
+            State_t     m_state { &Stepper::idle };
 
             uint32_t    m_stepsRequired { 0 };
             uint32_t    m_stepsCurrent { 0 };

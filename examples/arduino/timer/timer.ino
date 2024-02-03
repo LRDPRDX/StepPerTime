@@ -28,7 +28,7 @@ void loop()
 
 ISR( TIMER1_COMPA_vect )
 {
-    if( not stepper.isr() )
+    if( not stepper.onInterrupt() )
     {
         Serial.println( "Done!" );
         TIMSK1 = 0;
