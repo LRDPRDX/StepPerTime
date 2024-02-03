@@ -9,7 +9,7 @@ mentioned there, so the implementation can be very different (for example, I am 
 
 ## Example
 
-This is how it is look like.
+This is how it looks like.
 
 ![example profile](examples/ROOT/example.png)
 

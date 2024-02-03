@@ -10,8 +10,11 @@ namespace steppo
         m_midPoint = n >> 1;
     }
 
-    bool Stepper::isr()
+    bool Stepper::onInterrupt()
     {
+        if( not (this->*m_state)() )
+            return false;
+
         m_stepFraction += m_speedCurrent;
 
         if( stepOverflow() )
@@ -22,7 +25,7 @@ namespace steppo
         else
             m_newStep = false;
 
-        return (this->*m_state)();
+        return true;
     }
 
     void Stepper::start()
@@ -30,9 +33,13 @@ namespace steppo
         m_state = &Stepper::accelerate;
     }
 
-    bool Stepper::stop()
+    void Stepper::stop()
     {
-        reset();
+        m_state = &Stepper::decelerate;
+    }
+
+    bool Stepper::idle()
+    {
         return false;
     }
 
@@ -71,9 +78,8 @@ namespace steppo
         else
             m_speedCurrent -= m_acceleration;
 
-        if( //(m_stepsCurrent == m_stepsRequired) or
-            (m_speedCurrent == 0) )
-            m_state = &Stepper::stop;
+        if( m_speedCurrent == 0 )
+            m_state = &Stepper::idle;
 
         return true;
     }
@@ -94,7 +100,7 @@ namespace steppo
 
     void Stepper::reset()
     {
-        m_state             = &Stepper::stop;
+        m_state             = &Stepper::idle;
         m_stepsCurrent      = 0;
         m_stepFraction      = 0;
         m_decelerationPoint = 0;
