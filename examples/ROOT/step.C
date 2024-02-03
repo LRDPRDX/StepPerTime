@@ -17,7 +17,7 @@ void Step()
     Stepper s( 2000, 10000, 3 );
     s.start();
 
-    for( uint32_t tick = 0; s.isr(); ++tick )
+    for( uint32_t tick = 0; s.onInterrupt(); ++tick )
     {
         graphSpeed->AddPoint( tick, s.speedCurrent() );
         graphPosition->AddPoint( tick, s.stepsCurrent() );
