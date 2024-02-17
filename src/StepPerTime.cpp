@@ -12,7 +12,7 @@ namespace steppo
 
     bool Stepper::onInterrupt()
     {
-        if( not (this->*m_state)() )
+        if( not (this->*m_state.action)() )
             return false;
 
         m_stepFraction += m_speedCurrent;
@@ -30,12 +30,16 @@ namespace steppo
 
     void Stepper::start()
     {
-        m_state = &Stepper::accelerate;
+        if( currentState() != EState_t::eIdle )
+            return;
+
+        reset();
+        setState( EState_t::eAccelerate );
     }
 
     void Stepper::stop()
     {
-        m_state = &Stepper::decelerate;
+        setState( EState_t::eDecelerate );
     }
 
     bool Stepper::idle()
@@ -49,13 +53,13 @@ namespace steppo
 
         if( m_stepsCurrent == m_midPoint )
         {
-            m_state = &Stepper::decelerate;
+            setState( EState_t::eDecelerate );
             return true;
         }
 
         if( m_speedCurrent >= m_speedMax )
         {
-            m_state = &Stepper::run;
+            setState( EState_t::eRun );
             m_speedCurrent = m_speedMax;
             calcDecelerationPoint();
         }
@@ -66,7 +70,7 @@ namespace steppo
     bool Stepper::run()
     {
         if( m_stepsCurrent == m_decelerationPoint )
-            m_state = &Stepper::decelerate;
+            setState( EState_t::eDecelerate );
 
         return true;
     }
@@ -79,7 +83,7 @@ namespace steppo
             m_speedCurrent -= m_acceleration;
 
         if( m_speedCurrent == 0 )
-            m_state = &Stepper::idle;
+            setState( EState_t::eIdle );
 
         return true;
     }
@@ -100,12 +104,31 @@ namespace steppo
 
     void Stepper::reset()
     {
-        m_state             = &Stepper::idle;
+        setState( EState_t::eIdle );
+
         m_stepsCurrent      = 0;
         m_stepFraction      = 0;
         m_decelerationPoint = 0;
         m_speedCurrent      = 0;
         m_newStep           = false;
+    }
+
+    void Stepper::setState( const EState_t code )
+    {
+        m_state.code = code;
+        switch( code )
+        {
+            case( EState_t::eIdle ) :
+                m_state.action = &Stepper::idle; break;
+            case( EState_t::eAccelerate ) :
+                m_state.action = &Stepper::accelerate; break;
+            case( EState_t::eDecelerate ) :
+                m_state.action = &Stepper::decelerate; break;
+            case( EState_t::eRun ) :
+                m_state.action = &Stepper::run; break;
+            default :
+                m_state.action = &Stepper::decelerate; break;
+        }
     }
 }//steppo
 
