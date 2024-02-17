@@ -12,19 +12,34 @@ namespace steppo
     class Stepper
     {
         public :
-            Stepper( uint32_t n, uint32_t speed, uint8_t accel );
+            Stepper( uint32_t speed, uint8_t accel );
 
-            using State_t = bool (Stepper::*)(void);
+            enum EState_t
+            {
+                eIdle,
+                eAccelerate,
+                eDecelerate,
+                eRun,
+            };
 
             bool onInterrupt();
-            void start();
+            void start( uint32_t n );
             void stop();
 
             bool        newStep()      const { return m_newStep; };
             uint32_t    speedCurrent() const { return m_speedCurrent; };
             uint32_t    stepsCurrent() const { return m_stepsCurrent; };
+            EState_t    stateCurrent() const { return m_state.code; };
 
         private :
+            // Types
+            using Action_t = bool (Stepper::*)(void);
+            struct State_t
+            {
+                EState_t code   { EState_t::eIdle };
+                Action_t action { &Stepper::idle };
+            };
+
             // States
             bool idle();
             bool accelerate();
@@ -35,9 +50,10 @@ namespace steppo
             bool stepOverflow();
             void calcDecelerationPoint();
             void reset();
+            void setState( const EState_t code );
 
             // Data
-            State_t     m_state { &Stepper::idle };
+            State_t     m_state;
 
             uint32_t    m_stepsRequired { 0 };
             uint32_t    m_stepsCurrent { 0 };
