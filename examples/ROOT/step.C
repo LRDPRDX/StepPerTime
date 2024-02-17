@@ -14,8 +14,8 @@ void Step()
         graphPosition->SetTitle( "Position;tick;pos" );
         graphPosition->SetMarkerStyle( 6 );
 
-    Stepper s( 2000, 10000, 3 );
-    s.start();
+    Stepper s( 10000, 3 );
+    s.start( 2000 );
 
     for( uint32_t tick = 0; s.onInterrupt(); ++tick )
     {
