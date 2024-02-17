@@ -2,13 +2,10 @@
 
 namespace steppo
 {
-    Stepper::Stepper( uint32_t n, uint32_t speed, uint8_t accel ) :
-        m_stepsRequired( n ),
+    Stepper::Stepper( uint32_t speed, uint8_t accel ) :
         m_speedMax( speed ),
         m_acceleration( accel )
-    {
-        m_midPoint = n >> 1;
-    }
+    { }
 
     bool Stepper::onInterrupt()
     {
@@ -28,17 +25,22 @@ namespace steppo
         return true;
     }
 
-    void Stepper::start()
+    void Stepper::start( uint32_t n )
     {
-        if( currentState() != EState_t::eIdle )
+        if( stateCurrent() != EState_t::eIdle )
             return;
 
         reset();
+        m_stepsRequired = n;
+        m_midPoint = n / 2;
         setState( EState_t::eAccelerate );
     }
 
     void Stepper::stop()
     {
+        if(stateCurrent() == EState_t::eIdle )
+            return;
+
         setState( EState_t::eDecelerate );
     }
 
@@ -106,6 +108,7 @@ namespace steppo
     {
         setState( EState_t::eIdle );
 
+        m_midPoint          = 0;
         m_stepsCurrent      = 0;
         m_stepFraction      = 0;
         m_decelerationPoint = 0;

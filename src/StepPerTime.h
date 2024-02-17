@@ -12,7 +12,7 @@ namespace steppo
     class Stepper
     {
         public :
-            Stepper( uint32_t n, uint32_t speed, uint8_t accel );
+            Stepper( uint32_t speed, uint8_t accel );
 
             enum EState_t
             {
@@ -23,13 +23,13 @@ namespace steppo
             };
 
             bool onInterrupt();
-            void start();
+            void start( uint32_t n );
             void stop();
 
             bool        newStep()      const { return m_newStep; };
             uint32_t    speedCurrent() const { return m_speedCurrent; };
             uint32_t    stepsCurrent() const { return m_stepsCurrent; };
-            EState_t    currentState() const { return m_state.code; };
+            EState_t    stateCurrent() const { return m_state.code; };
 
         private :
             // Types
