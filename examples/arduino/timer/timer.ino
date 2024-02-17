@@ -1,6 +1,6 @@
 #include "StepPerTime.h"
 
-steppo::Stepper stepper( 200, 10000, 200 );
+steppo::Stepper stepper( 10000, 200 );
 
 void setup()
 {
@@ -17,7 +17,7 @@ void setup()
 
     sei();
 
-    stepper.start();
+    stepper.start( 1000 );
 
     Serial.println( "Start!" );
 }
