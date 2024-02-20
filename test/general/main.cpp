@@ -17,7 +17,9 @@ int main()
     assert( s.speedCurrent() == 0 );
     assert( s.newStep()      == false );
 
-    s.start( nSteps );
+    assert( s.stop() == false );
+
+    assert( s.start( nSteps ) == true );
     assert( s.stateCurrent() == Stepper::EState_t::eAccelerate );
     assert( s.speedCurrent() == 0 );
 
@@ -29,7 +31,7 @@ int main()
     assert( s.stepsCurrent() == nSteps );
     assert( s.stateCurrent() == Stepper::EState_t::eIdle );
 
-    s.start( nSteps );
+    assert( s.start( nSteps ) == true );
     assert( s.stateCurrent() == Stepper::EState_t::eAccelerate );
 
     while( s.onInterrupt() )
@@ -38,7 +40,7 @@ int main()
         {
             assert( s.stateCurrent() == Stepper::EState_t::eRun );
 
-            s.stop();
+            assert( s.stop() == true );
             assert( s.stateCurrent() == Stepper::EState_t::eDecelerate );
         }
     }

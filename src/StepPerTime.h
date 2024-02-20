@@ -23,8 +23,8 @@ namespace steppo
             };
 
             bool onInterrupt();
-            void start( uint32_t n );
-            void stop();
+            bool start( uint32_t n );
+            bool stop();
 
             bool        newStep()      const { return m_newStep; };
             uint32_t    speedCurrent() const { return m_speedCurrent; };

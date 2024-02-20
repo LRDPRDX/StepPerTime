@@ -25,23 +25,27 @@ namespace steppo
         return true;
     }
 
-    void Stepper::start( uint32_t n )
+    bool Stepper::start( uint32_t n )
     {
         if( stateCurrent() != EState_t::eIdle )
-            return;
+            return false;
 
         reset();
         m_stepsRequired = n;
         m_midPoint = n / 2;
         setState( EState_t::eAccelerate );
+
+        return true;
     }
 
-    void Stepper::stop()
+    bool Stepper::stop()
     {
         if(stateCurrent() == EState_t::eIdle )
-            return;
+            return false;
 
         setState( EState_t::eDecelerate );
+
+        return true;
     }
 
     bool Stepper::idle()
